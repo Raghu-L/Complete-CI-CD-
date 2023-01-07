@@ -86,6 +86,23 @@ pipeline{
                 }
             } 
 
+
+            stage('Push Image to Dockerhub'){ //add docker creds in jenkins 
+
+                steps{
+                    script{
+                      
+                      withCredentials([string(credentialsId : 'git_creds' , variable : 'docker_hub_creds')]){
+                        sh 'docker login -u -p' //username and password
+                        sh 'docker image push raghu-l/$JOB_NAME:v1.$BUILD_ID'
+                        sh 'docker image push raghu-l/$JOB_NAME:latest'
+
+                      }
+
+                    }
+                }
+            }
+
     }
     
 }
