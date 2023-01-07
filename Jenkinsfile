@@ -9,9 +9,14 @@ pipeline{
               steps{
                   git branch: 'main', url: 'https://github.com/Raghu-L/Complete-CI-CD-.git'
               }  
+            }  
 
-
-           }  
+             stage('Unit Testing'){
+        
+              steps{
+                  sh 'mvn test'
+              }  
+            }  
 
     }
     
