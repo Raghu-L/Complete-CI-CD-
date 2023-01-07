@@ -62,7 +62,7 @@ pipeline{
                             type: 'jar'
                         ]
                     ], 
-                    credentialsId: 'nexus-auth1', 
+                    credentialsId: 'nexus-auth', 
                     groupId: 'com.example', 
                     nexusUrl: '100.26.109.64:8081', 
                     nexusVersion: 'nexus3', 
@@ -71,7 +71,20 @@ pipeline{
                     version: '1.0.0'
                 }
                 }
-            }   
+            }  
+
+
+            stage('Docker Image Build'){
+
+                steps{
+                    script{
+                        sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
+                        sh 'docker image tag $JOB_NAME:v1.$BUILD_ID raghu-l/$JOB_NAME:v1.$BUILD_ID'
+                        sh 'docker image tag $JOB_NAME:v1.$BUILD_ID raghu-l/$JOB_NAME:latest'
+                        
+                    }
+                }
+            } 
 
     }
     
