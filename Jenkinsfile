@@ -41,6 +41,12 @@ pipeline{
                  }
                 }
               }  
+            }
+
+            stage('Quality Gate Status'){
+                script{
+                    waitForQualityGate(abortPipeline: true, credentialsId: 'Jenkins-auth')
+                }
             }   
 
     }
