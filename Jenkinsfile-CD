@@ -1,12 +1,44 @@
 pipeline{
     agent any
 
+    parameters{
+        choice(name : 'action', choices: 'create\ndestroy\ndestroycluster', description: 'Create/Update or Destroy the EKS cluster')
+    }
+
     stages{
         stage('Git Checkout'){
             steps{
                 git branch: 'main', url: 'https://github.com/Raghu-L/Complete-CI-CD-.git'
             }
+        }
 
+        stage('eks connect'){
+            steps{
+                
+            }
+        }
+
+        stage('eks deployments'){
+            when{ expression{params.action == 'create'}}
+            steps{
+                scripts{
+                    def apply = false
+                    try {
+                            input message : 'Do you want to intitate the Deployment', ok: 'Ready to apply Config'
+                            apply = true
+                    }
+                    catch(err){
+                        apply = false
+                        CurrentBuild.result= 'UNSTABLE'
+                    }
+                    if(apply){
+                        sh """
+                            kubectl apply -f .
+                            """;
+                    }
+                }
+            }
         }
     }
+
 }
