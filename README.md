@@ -9,6 +9,7 @@ Tools Used
 5. Nexsus 
 6. Docker
 7. EKS
+8. AWS (where all servers are hosted)
 
 Docker and AWS CLI are installed and configured+ on JENKINS Server 
 
