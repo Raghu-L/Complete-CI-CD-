@@ -10,5 +10,14 @@ Tools Used
 6. Docker
 7. EKS
 
+Docker and AWS CLI are installed and configured+ on JENKINS Server 
+
 
 EKS cluster is created using terraform IAAC - (https://github.com/Raghu-L/Teraaform-Iaac.git)
+
+
+
+
+
+
+Do kubectl get all -> copy the load balancer where application will be deployed!

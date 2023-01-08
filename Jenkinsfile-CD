@@ -3,7 +3,16 @@ pipeline{
 
     parameters{
         choice(name : 'action', choices: 'create\ndestroy\ndestroycluster', description: 'Create/Update or Destroy the EKS cluster')
+
+        string(name: 'cluster',defaultValue: 'demo-cluster', description: 'eEKs cluster name')
+        string(name: 'region',defaultValue: 'us-east-1', description: 'EKs cluster region')
     }
+
+    environment{
+        ACCESS_KEY =  credentials('aws_aceess_key_id')   //Create secret using jenkins 
+        SECRET_KEY =  credentials('aws_secret_acsess_key')     //Create secret using jenkins 
+    }
+
 
     stages{
         stage('Git Checkout'){
@@ -14,14 +23,22 @@ pipeline{
 
         stage('eks connect'){
             steps{
-                
+                sh """
+
+                 aws configure set aws_aceess_key_id "$ACCESS_KEY"
+                 aws configure set aws_secret_acsess_key "$SECRET_KEY"
+                 aws configure set region "$(parms.region)"
+
+                 aws eks --region $(parms.region) update-kubeconfig --name $(parms.cluster)
+                 """;
+
             }
         }
 
         stage('eks deployments'){
             when{ expression{params.action == 'create'}}
             steps{
-                scripts{
+                script{
                     def apply = false
                     try {
                             input message : 'Do you want to intitate the Deployment', ok: 'Ready to apply Config'
@@ -38,6 +55,32 @@ pipeline{
                     }
                 }
             }
+        }
+
+        stage('Delete Deployment'){
+             when {expression{params.action == 'destroy'}}
+
+             steps{
+                script{
+                    def destroy = false
+
+                    try{
+                        input message : 'Please confirm to delete the deployments', ok: 'Ready to Destroy'
+                        destroy = true
+                    }
+                    catch(err){
+                        destroy = false 
+                        CurrentBuild.result = 'UNSTABLE'
+                    }
+
+                    if(destroy){
+                            sh """
+                                kubectl delete -f .
+                            """;
+                    }
+                }
+             }
+
         }
     }
 
